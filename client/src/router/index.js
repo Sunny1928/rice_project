@@ -1,21 +1,38 @@
 import Vue from 'vue'
-import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
+import VueRouter from 'vue-router'
+import HomeView from '../views/HomeView.vue'
 import Register from '@/components/Register'
+import Login from '@/components/Login'
 
-Vue.use(Router)
+Vue.use(VueRouter)
 
-export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'HelloWorld',
-      component: HelloWorld
-    },
-    {
-      path: '/register',
-      name: 'register',
-      component: Register
-    }
-  ]
+const routes = [
+  {
+    path: '/',
+    name: 'root',
+    component: HomeView
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: Register
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: Login
+  }
+  // {
+  //   path: '/other',
+  //   name: 'home',
+  //   component: HomeView
+  // }
+]
+
+const router = new VueRouter({
+  mode: 'history',
+  base: process.env.BASE_URL,
+  routes
 })
+
+export default router

@@ -13,10 +13,10 @@ app.use(cors())
 
 
 //routers
-const productRouter = require('../routes/productRouter')
-const userRouter = require('../routes/userRouter')
-const customerRouter = require('../routes/customerRouter')
-const tradeRouter = require('../routes/tradeRouter')
+const productRouter = require('./routes/productRouter')
+const userRouter = require('./routes/userRouter')
+const customerRouter = require('./routes/customerRouter')
+const tradeRouter = require('./routes/tradeRouter')
 
 
 app.use('/api/products', productRouter)

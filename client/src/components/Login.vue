@@ -3,7 +3,7 @@
     <v-flex xs6 offset-xs3>
       <div class="white elevation-2">
         <v-app-bar flat dense class="cyan" dark>
-        <v-app-bar-title>Register</v-app-bar-title>
+        <v-app-bar-title>Login</v-app-bar-title>
         </v-app-bar>
 
         <div class="pl-4 pr-4 pt-2 pb-2">
@@ -20,8 +20,8 @@
             <v-btn
             dark
             class="cyan"
-            @click="register">
-            Register
+            @click="login">
+            Login
             </v-btn>
         </div>
         
@@ -41,9 +41,9 @@ export default {
     }
   },
   methods: {
-    async register () {
+    async login () {
       try {
-        const response = await AuthenticationService.register({
+        const response = await AuthenticationService.login({
           account: this.account,
           password: this.password
         })
