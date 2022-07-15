@@ -26,6 +26,14 @@
 
     <div>
       <v-btn 
+        plain  
+        :to="{
+          name: 'register'
+        }">
+        Sign Up
+      </v-btn>
+      <v-btn 
+        v-if="!$store.state.isUserLoggedIn"
         plain 
         :to="{
           name: 'login'
@@ -34,15 +42,9 @@
       </v-btn>
       
       <v-btn 
-        plain  
-        :to="{
-          name: 'register'
-        }">
-        Sign Up
-      </v-btn>
-      
-      <v-btn 
-        plain >
+        v-if="$store.state.isUserLoggedIn"
+        plain
+        @click="logout">
         Log Out
       </v-btn>
     </div>
@@ -51,7 +53,15 @@
 
 <script>
 export default {
-  
+  methods:{
+    logout(){
+      this.$store.dispatch('setToken', null)
+      this.$store.dispatch('setUser', null)
+      this.$router.push({
+        name: 'root'
+      })
+    }
+  }
 }
 </script>
 
@@ -60,6 +70,6 @@ export default {
   cursor: pointer;
 }
 .home:hover {
-  color: #E9E;
+  color: rgb(255, 250, 210);
 }
 </style>

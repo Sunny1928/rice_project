@@ -1,11 +1,7 @@
 <template>
   <v-layout>
     <v-flex xs6 offset-xs3>
-      <div class="white elevation-2">
-        <v-app-bar flat dense class="cyan" dark>
-        <v-app-bar-title>Register</v-app-bar-title>
-        </v-app-bar>
-
+      <panel title="Register">
         <div class="pl-4 pr-4 pt-2 pb-2">
           <v-text-field
             label="Account"
@@ -24,14 +20,15 @@
             Register
             </v-btn>
         </div>
-        
-      </div>
+      </panel> 
     </v-flex>
   </v-layout>
 </template>
 
 <script>
 import AuthenticationService from '@/services/AuthenticationService'
+import Panel from './Panel.vue'
+
 export default {
   data () {
     return {
@@ -53,6 +50,9 @@ export default {
         console.log(error)
       }
     }
+  },
+  components: {
+    Panel
   }
 }
 </script>

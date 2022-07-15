@@ -10,6 +10,12 @@ const sequelize = new Sequelize(
         host: dbConfig.db.HOST,
         dialect: dbConfig.db.dialect,
         port: dbConfig.db.PORT,
+        dialectOptions: {
+            dateStrings: true,
+            typeCast: true,
+            timezone: "+08:00"
+        },
+        timezone: "+08:00",
         operatorAliases: false,
         pool: {
             max: dbConfig.db.pool.max,

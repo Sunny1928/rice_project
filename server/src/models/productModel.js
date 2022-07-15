@@ -6,7 +6,15 @@ module.exports = (sequelize, DataTypes) => {
         },
         price: {
             type: DataTypes.INTEGER,
-            allowNull: false
+        },
+        uint: {
+            type: DataTypes.STRING,
+        },
+        sellUint: {
+            type: DataTypes.STRING,
+        },
+        number: {
+            type: DataTypes.INTEGER,
         }
     })
 

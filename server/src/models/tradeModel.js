@@ -5,20 +5,22 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         amount: {
-            type: DataTypes.INTEGER,
-            allowNull: false
+            type: DataTypes.INTEGER
         },
         package: {
-            type: DataTypes.INTEGER,
-            allowNull: false
+            type: DataTypes.INTEGER
         },
         customer_name: {
-            type: DataTypes.STRING,
-            allowNull: false
+            type: DataTypes.STRING
         },
         user_name: {
-            type: DataTypes.STRING,
-            allowNull: false
+            type: DataTypes.STRING
+        },
+        cash: {
+            type: DataTypes.INTEGER
+        },
+        cashDate: {
+            type: 'TIMESTAMP',
         }
     })
 

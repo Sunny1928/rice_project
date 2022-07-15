@@ -10,7 +10,9 @@ const addCustomer = async (req, res) => {
     let info = {
         name: req.body.name,
         address: req.body.address,
-        phone: req.body.phone
+        phone: req.body.phone,
+        homePhone: req.body.homePhone,
+        taxId: req.body.taxId
     }
 
     const customer = await Customer.create(info)

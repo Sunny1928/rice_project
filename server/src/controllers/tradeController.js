@@ -12,7 +12,9 @@ const addTrade = async (req, res) => {
         amount: req.body.amount,
         package: req.body.package,
         customer_name: req.body.customer_name,
-        user_name: req.body.user_name
+        user_name: req.body.user_name,
+        cash: req.body.cash,
+        cashDate: req.body.cashDate
     }
 
     const trade = await Trade.create(info)
@@ -51,10 +53,19 @@ const deleteTrade = async (req, res) => {
     res.status(200).send('Trade is deleted!')
 }
 
+// 6. get customer's all trade
+
+const getAllTradesOfCustomer = async (req, res) => {
+    let customer = req.params.customer
+    let trades = await Trade.findAll({where: { customer_name: customer}})
+    res.status(200).send(trades)
+}
+
 module.exports = {
     addTrade,
     getAllTrades,
     getOneTrade,
     updateTrade,
-    deleteTrade
+    deleteTrade,
+    getAllTradesOfCustomer
 }

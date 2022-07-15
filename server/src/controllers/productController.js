@@ -9,7 +9,10 @@ const Product = db.products
 const addProduct = async (req, res) => {
     let info = {
         name: req.body.name,
-        price: req.body.price
+        price: req.body.price,
+        uint: req.body.uint,
+        number: req.body.number,
+        sellUint: req.body.sellUint
     }
 
     const product = await Product.create(info)

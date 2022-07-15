@@ -5,12 +5,16 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         },
         address: {
-            type: DataTypes.STRING,
-            allowNull: false
+            type: DataTypes.STRING
         },
         phone: {
-            type: DataTypes.STRING,
-            allowNull: false
+            type: DataTypes.STRING
+        },
+        homePhone: {
+            type: DataTypes.STRING
+        },
+        taxId: {
+            type: DataTypes.STRING
         }
     })
 
