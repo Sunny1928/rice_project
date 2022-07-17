@@ -7,6 +7,10 @@ import Login from '@/components/Login'
 import Customer from '@/components/Customer'
 import Product from '@/components/Product'
 import Trade from '@/components/Trade'
+import SellUint from '@/components/SellUint'
+import CashMethod from '@/components/CashMethod'
+
+
 
 Vue.use(VueRouter)
 
@@ -35,6 +39,16 @@ const routes = [
     path: '/product',
     name: 'product',
     component: Product
+  },
+  {
+    path: '/sellUint',
+    name: 'sellUint',
+    component: SellUint
+  },
+  {
+    path: '/cashMethod',
+    name: 'cashMethod',
+    component: CashMethod
   },
   {
     path: '/trade/:customerName',

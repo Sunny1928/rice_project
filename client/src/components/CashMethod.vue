@@ -2,13 +2,13 @@
   <v-container>
     <v-data-table
       :headers="headers"
-      :items="products"
+      :items="cashMethods"
       sort-by="name"
       class="elevation-1">
 
       <template v-slot:top>
         <v-toolbar flat>
-          <v-toolbar-title>產品資訊</v-toolbar-title>
+          <v-toolbar-title>入帳選項資料</v-toolbar-title>
           <v-divider
             class="mx-4"
             inset
@@ -25,7 +25,7 @@
                 class="mb-2"
                 v-bind="attrs"
                 v-on="on">
-                新增產品
+                新增入帳選項
               </v-btn>
             </template>
 
@@ -39,33 +39,9 @@
                   <v-row>
                     <v-text-field
                       v-model="editedItem.name"
-                      label="產品名稱"
+                      label="入帳選項"
                       :rules="[required]">
                     </v-text-field>
-                  </v-row>
-                  <v-row>
-                      <v-text-field
-                        class="pr-4"
-                        v-model="editedItem.number"
-                        label="數量">
-                      </v-text-field>
-                      <v-select
-                        v-model="editedItem.uint"
-                        :items="productUint"
-                        label="單位">
-                      </v-select>
-                  </v-row>
-                  <v-row>
-                      <v-select
-                        class="pr-4"
-                        v-model="editedItem.sellUint"
-                        :items="productSellUint"
-                        label="販賣單位">
-                      </v-select>
-                      <v-text-field
-                        v-model="editedItem.price"
-                        label="單價">
-                      </v-text-field>
                   </v-row>
                 </v-container>
               </v-card-text>
@@ -113,6 +89,7 @@
         </v-icon>
         <v-icon
           small
+          class="mr-2"
           @click="deleteItem(item)">
           mdi-delete
         </v-icon>
@@ -131,51 +108,35 @@
 </template>
 
 <script>
-import ProductService from '@/services/ProductService'
-import SellUintService from '@/services/SellUintService'
+import CashMethodService from '@/services/CashMethodService'
 
 export default {
   data: () => ({
-    productUint:['公斤', '台斤'],
-    productSellUint:[],
-    // productSellUint:['公斤', '台斤', '包', '箱', '個', '車', '件', '斗'],
     required: (value) => !!value || 'Required.',
     dialog: false,
     dialogDelete: false,
     headers: [
       {
-        text: '產品',
+        text: '入帳選項',
         align: 'start',
         sortable: false,
         value: 'name',
       },
-      { text: '數量', value: 'number', sortable: false},
-      { text: '單位', value: 'uint', sortable: false},
-      { text: '販賣單位', value: 'sellUint', sortable: false},
-      { text: '單價', value: 'price', sortable: false},
-      { text: '功能', value: 'actions', sortable: false }
+      { text: '功能', value: 'actions', sortable: false },
     ],
-    products: [],
+    cashMethods: [],
     editedIndex: -1,
     editedItem: {
-      name: '',
-      number: '',
-      uint: '',
-      sellUint: '',
-      price: ''
+      name: ''
     },
     defaultItem: {
-      name: '',
-      number: '',
-      uint: '',
-      sellUint: '',
-      price: ''
+      name: ''
     },
   }),
 
   computed: {
     formTitle () {
-      return this.editedIndex === -1 ? '新增產品' : '編輯產品'
+      return this.editedIndex === -1 ? '新增入帳選項' : '編輯入帳選項'
     },
   },
 
@@ -193,27 +154,31 @@ export default {
   },
 
   methods: {
+    navigateTo (route) {
+      this.$router.push(route)
+    },
+
     async initialize () {
-      this.products = (await ProductService.index()).data
-      this.productSellUint = (await SellUintService.index()).data.map(value => value.name);
+      this.cashMethods = (await CashMethodService.index()).data
+      // console.log(this.cashMethods)
     },
 
     editItem (item) {
-      this.editedIndex = this.products.indexOf(item)
+      this.editedIndex = this.cashMethods.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialog = true
     },
 
     deleteItem (item) {
-      this.editedIndex = this.products.indexOf(item)
+      this.editedIndex = this.cashMethods.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.dialogDelete = true
     },
 
     async deleteItemConfirm () {
       try{
-        await ProductService.delete(this.editedItem)
-        this.products.splice(this.editedIndex, 1)
+        await CashMethodService.delete(this.editedItem)
+        this.cashMethods.splice(this.editedIndex, 1)
         this.closeDelete()
       }catch(err){
         console.log(err)
@@ -237,18 +202,16 @@ export default {
     },
 
     async save () {
-      var item = this.editedItem
-
       if (this.editedIndex > -1) {
         try{
-          await ProductService.put(item)
-          this.initialize()
+          await CashMethodService.put(this.editedItem)
+          Object.assign(this.cashMethods[this.editedIndex], this.editedItem)
         }catch(err){
           console.log(err)
         }
       } else {
         try{
-          await ProductService.post(item)
+          await CashMethodService.post(this.editedItem)
           this.initialize()
         }catch(err){
           console.log(err)

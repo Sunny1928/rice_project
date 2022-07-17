@@ -3,7 +3,7 @@
     <v-data-table
       :headers="headers"
       :items="customers"
-      sort-by="calories"
+      sort-by="name"
       class="elevation-1">
 
       <template v-slot:top>
@@ -70,10 +70,6 @@
                 </v-container>
               </v-card-text>
 
-              <div class="danger-alert" v-if="error">
-                {{error}}
-              </div>
-
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn
@@ -85,7 +81,8 @@
                 <v-btn
                   color="blue darken-1"
                   text
-                  @click="save">
+                  @click="save"
+                  :disabled="editedItem.name==''">
                   儲存
                 </v-btn>
               </v-card-actions>
@@ -150,7 +147,6 @@ import CustomerService from '@/services/CustomerService'
 export default {
   data: () => ({
     required: (value) => !!value || 'Required.',
-    error:'',
     dialog: false,
     dialogDelete: false,
     headers: [
@@ -237,7 +233,6 @@ export default {
 
     close () {
       this.dialog = false
-      this.error = ''
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem)
         this.editedIndex = -1
@@ -253,12 +248,6 @@ export default {
     },
 
     async save () {
-      // const areAllFiledsFilledIn = Object.keys(this.editedItem).every(key => !! this.editedItem[key])
-      // if(!areAllFiledsFilledIn){
-      //   this.error = '請把所有資訊格填完'
-      //   return
-      // }
-
       if (this.editedIndex > -1) {
         try{
           await CustomerService.put(this.editedItem)

@@ -43,6 +43,8 @@ db.products = require('./productModel.js')(sequelize, DataTypes)
 db.users = require('./userModel.js')(sequelize, DataTypes)
 db.customers = require('./customerModel.js')(sequelize, DataTypes)
 db.trades = require('./tradeModel.js')(sequelize, DataTypes)
+db.sellUints = require('./sellUintModel.js')(sequelize, DataTypes)
+db.cashMethods = require('./cashMethodModel.js')(sequelize, DataTypes)
 
 db.sequelize.sync({force: false})
 .then(() => {
@@ -50,3 +52,4 @@ db.sequelize.sync({force: false})
 })
 
 module.exports = db
+

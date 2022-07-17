@@ -1,9 +1,86 @@
 <template>
   <v-container>
+    <template>
+    <v-row>
+      <v-col
+        cols="12"
+        md="2">
+        <span>篩選條件：</span>
+      </v-col>
+      <v-col
+        cols="12"
+        md="4">
+        <v-select
+          v-model="searchCustomer"
+          :items="customerNames"
+          label="顧客選項選項"
+          dense
+          outlined
+          >
+        </v-select>
+      </v-col>
+
+      <v-col
+        cols="12"
+        md="1">
+        <v-btn>
+          搜尋
+        </v-btn>
+      </v-col>
+    
+      <v-col
+        cols="12"
+        md="4">
+        <v-menu
+          ref="menu"
+          v-model="menu"
+          :close-on-content-click="false"
+          :return-value.sync="dates"
+          transition="scale-transition"
+          offset-y
+          min-width="auto">
+          <template v-slot:activator="{ on, attrs }">
+            <v-text-field
+              v-model="dateRangeText"
+              label="Picker in menu"
+              prepend-icon="mdi-calendar"
+              readonly
+              dense
+              outlined
+              flat
+              solo
+              v-bind="attrs"
+              v-on="on">
+            </v-text-field>
+          </template>
+          <v-date-picker
+            v-model="dates"
+            no-title
+            scrollable
+            range>
+            <v-spacer></v-spacer>
+            <v-btn
+              text
+              color="primary"
+              @click="menu = false">
+              Cancel
+            </v-btn>
+            <v-btn
+              text
+              color="primary"
+              @click="$refs.menu.save(dates)">
+              OK
+            </v-btn>
+          </v-date-picker>
+        </v-menu>
+      </v-col>
+
+      
+    </v-row>
+    </template>
     <v-data-table
       :headers="headers"
       :items="trades"
-      sort-by="calories"
       class="elevation-1">
 
       <template v-slot:top>
@@ -36,7 +113,7 @@
                 <v-switch
                   v-model="switch1"
                   inset
-                  :label="`Switch 1: ${switch1.toString()}`"
+                  :label="`${(switch1 === true) ? '轉換到訂單模式' :'轉換到付款模式'}`"
                 ></v-switch>
               </v-card-title>
 
@@ -44,6 +121,7 @@
                 <v-container v-if="!switch1">
                   <v-row>
                     <v-select
+                      v-model="editedItem.name"
                       :items="productName"
                       label="商品選項"
                       :rules="[required]">
@@ -66,7 +144,8 @@
                 <v-container v-else>
                   <v-row>
                     <v-select
-                      :items="productName"
+                      v-model="editedItem.name"
+                      :items="cashMethod"
                       label="入帳選項"
                       :rules="[required]">
                     </v-select>
@@ -80,10 +159,6 @@
                 </v-container>
               </v-card-text>
 
-              <div class="danger-alert" v-if="error">
-                {{error}}
-              </div>
-
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn
@@ -95,7 +170,8 @@
                 <v-btn
                   color="blue darken-1"
                   text
-                  @click="save">
+                  @click="save"
+                  :disabled="editedItem.name==''">
                   儲存
                 </v-btn>
               </v-card-actions>
@@ -104,7 +180,7 @@
 
           <v-dialog v-model="dialogDelete" max-width="500px">
             <v-card>
-              <v-card-title class="text-h5">你確定要刪掉這個客戶嗎？</v-card-title>
+              <v-card-title class="text-h5">你確定要刪掉這個交易嗎？</v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="blue darken-1" text @click="closeDelete">取消</v-btn>
@@ -118,6 +194,13 @@
       </template>
 
       <template v-slot:item.actions="{ item }">
+        <v-icon
+          v-if="item.amount=='-'"
+          dense
+          class="mr-2"
+          @click="editItem(item)">
+          mdi-check-circle
+        </v-icon>
         <v-icon
           small
           class="mr-2"
@@ -139,6 +222,12 @@
         </v-btn>
       </template>
 
+      <template
+        v-for="header in headers.filter((header) => header.hasOwnProperty('formatter'))"
+        v-slot:[`item.${header.value}`]="{ header, value }">
+        {{ header.formatter(value) }}
+      </template>
+
     </v-data-table>
   </v-container>
 </template>
@@ -146,34 +235,50 @@
 <script>
 import ProductService from '@/services/ProductService'
 import TradeService from '@/services/TradeService'
+import CashMethodService from '@/services/CashMethodService'
+import CustomerService from '@/services/CustomerService'
+
 
 export default {
   data: () => ({
+    dates: ['2022-09-10', '2022-09-20'],
+    // dates: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+    menu: false,
+
+    searchCustomer:'',
+    customerNames: [],
     switch1: false,
+    cashMethod: [],
     productName: [],
     customerName: '',
     required: (value) => value.toString().length !== 0 || 'Required.',
-    error:'',
     dialog: false,
     dialogDelete: false,
     headers: [
-      { text: '日期', value: 'date', sortable: false},
+      { text: '日期', value: 'date', sortable: false, width: '10%'},
       {
         text: '產品',
         align: 'start',
         sortable: false,
         value: 'name',
       },
-      { text: '數量', value: 'amount', sortable: false},
-      { text: '包數', value: 'package', sortable: false},
-      { text: '總數量', value: 'totalNumber', sortable: false},
-      { text: '單位', value: 'uint', sortable: false},
-      { text: '單價', value: 'price', sortable: false},
-      { text: '小計', value: 'aTradePrice', sortable: false},
-      { text: '現金收款', value: 'cash', sortable: false},
-      { text: '現金收款日期', value: 'cashDate', sortable: false},
-      { text: '累計', value: 'grandPrice', sortable: false},
-      { text: '功能', value: 'actions', sortable: false },
+      { text: '數量', value: 'amount', sortable: false,
+        formatter: (x) => (""+x).replace(/\B(?=(\d{3})+(?!\d))/g, ",")},
+      { text: '包數', value: 'package', sortable: false,
+        formatter: (x) => (""+x).replace(/\B(?=(\d{3})+(?!\d))/g, ",")},
+      { text: '總數量', value: 'totalNumber', sortable: false,
+        formatter: (x) => (""+x).replace(/\B(?=(\d{3})+(?!\d))/g, ",")},
+      { text: '單位', value: 'sellUint', sortable: false},
+      { text: '單價', value: 'price', sortable: false,
+        formatter: (x) => (""+x).replace(/\B(?=(\d{3})+(?!\d))/g, ",")},
+      { text: '小計', value: 'aTradePrice', sortable: false,
+        formatter: (x) => (""+x).replace(/\B(?=(\d{3})+(?!\d))/g, ",")},
+      { text: '現金收款', value: 'cash', sortable: false,
+        formatter: (x) => (""+x).replace(/\B(?=(\d{3})+(?!\d))/g, ",")},
+      { text: '現金收款日期', value: 'cashDate', sortable: false, width: '10%'},
+      { text: '累計', value: 'grandPrice', sortable: false, 
+        formatter: (x) => (""+x).replace(/\B(?=(\d{3})+(?!\d))/g, ",")},
+      { text: '功能', value: 'actions', sortable: false, width: '10%'},
     ],
     trades: [],
     editedIndex: -1,
@@ -198,10 +303,14 @@ export default {
     formTitle () {
       return this.editedIndex === -1 ? '新增交易' : '編輯交易'
     },
+    dateRangeText () {
+      return this.dates.join(' ~ ')
+    },
   },
 
   watch: {
     dialog (val) {
+      this.switch1 = this.editedItem.amount=='-'? true : false
       val || this.close()
     },
     dialogDelete (val) {
@@ -214,41 +323,58 @@ export default {
   },
 
   methods: {
+    numberWithCommas (x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    },
+
     async initialize () {
+      this.customerNames = (await CustomerService.index()).data.map(value => value.name);
+      // customer name
       this.customerName = this.$store.state.route.params.customerName
       // console.log(this.customerName)
 
+      // all products
       const products = (await ProductService.index()).data
-      var namePriceProduct = {}
-      var nameUintProduct = {}
+      var productArr = []
       products.forEach(item=>{
-        this.productName.push(item.name)
-        namePriceProduct[item.name] = item.price
-        nameUintProduct[item.name] = item.uint
+        var fullName = item.name + item.number + item.uint
+        this.productName.push(fullName)
+        productArr[fullName] = item
       })
-      // console.log(namePriceProduct)
+      // console.log(productArr)
 
+      // all trade of customer
       this.trades = (await TradeService.index(this.customerName)).data
       // console.log(this.trades)
 
+      // cashMethod selector
+      this.cashMethod = (await CashMethodService.index()).data.map(value => value.name);
+
+      // calculate part
       var sum = 0
       this.trades.forEach(item=>{
         item['date'] = item.createdAt.slice(0,10) + ' ' + item.createdAt.slice(11,19)
-        item['price'] = namePriceProduct[item.name]
-        item['uint'] = nameUintProduct[item.name]
-
-
+        
         if (item.amount == null){
+          item['amount'] = '-'
+          item['package'] = '-'
+          item['sellUint'] = '-'
+          item['price'] = '-'
           item['totalNumber'] = '-'
           item['aTradePrice'] = '-'
           sum-= item.cash
           item['grandPrice'] = sum
         }else{
-          item['totalNumber'] = item.amount*item.package
-          item['aTradePrice'] = item.totalNumber*item.price
+          item['cash'] = '-'
+          item['price'] = productArr[item.name].price
+          item['sellUint'] = productArr[item.name].sellUint
+          item['totalNumber'] = item.amount * item.package
+          item['aTradePrice'] = item.totalNumber * item.price
           sum+= item.aTradePrice
           item['grandPrice'] = sum
+
         }
+
         // console.log(item)
       })
     },
@@ -277,7 +403,6 @@ export default {
 
     close () {
       this.dialog = false
-      this.error = ''
       this.$nextTick(() => {
         this.editedItem = Object.assign({}, this.defaultItem)
         this.editedIndex = -1
@@ -293,23 +418,20 @@ export default {
     },
 
     async save () {
-      // const areAllFiledsFilledIn = Object.keys(this.editedItem).every(key => !! this.editedItem[key])
-      // if(!areAllFiledsFilledIn){
-      //   this.error = '請把所有資訊格填完'
-      //   return
-      // }
-
       var item = this.editedItem
       item['customer_name'] = this.customerName
       item['user_name'] = this.$store.state.user.account
-      // console.log(item)
+      // console.log(item['user_name'])
 
-      if (switch1) {
-        item['package'] = ''
-        item['amount'] = ''
+      if (this.switch1) {
+        item['package'] = null
+        item['amount'] = null
+      }else{
+        item['cash'] = null
       }
 
       if (this.editedIndex > -1) {
+        console.log('edit')
         try{
           await TradeService.put(item)
           this.initialize()
@@ -317,6 +439,7 @@ export default {
           console.log(err)
         }
       } else {
+        console.log('new')
         try{
           await TradeService.post(item)
           this.initialize()
@@ -329,3 +452,9 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.border{
+  border: 2px solid cyan;
+}
+</style>

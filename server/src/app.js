@@ -17,12 +17,17 @@ const productRouter = require('./routes/productRouter')
 const userRouter = require('./routes/userRouter')
 const customerRouter = require('./routes/customerRouter')
 const tradeRouter = require('./routes/tradeRouter')
+const sellUintRouter = require('./routes/sellUintRouter')
+const cashMethodRouter = require('./routes/cashMethodRouter')
 
 
 app.use('/api/products', productRouter)
 app.use('/api/users', userRouter)
 app.use('/api/customers', customerRouter)
 app.use('/api/trades', tradeRouter)
+app.use('/api/sellUints', sellUintRouter)
+app.use('/api/cashMethods', cashMethodRouter)
+
 
 
 

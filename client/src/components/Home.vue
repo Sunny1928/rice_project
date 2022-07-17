@@ -5,7 +5,7 @@
       <v-row>
         <v-col
           cols="12"
-          md="6">
+          md="3">
           <v-btn
             class="cyan d-flex align-center"
             dark
@@ -13,12 +13,12 @@
             :to="{
               name: 'customer'
             }">
-            Customer
+            顧客
           </v-btn>
         </v-col>
         <v-col
           cols="12"
-          md="6">
+          md="3">
           <v-btn
             class="cyan d-flex align-center"
             dark
@@ -26,7 +26,33 @@
             :to="{
               name: 'product'
             }">
-            Product
+            商品
+          </v-btn>
+        </v-col>
+        <v-col
+          cols="12"
+          md="3">
+          <v-btn
+            class="cyan d-flex align-center"
+            dark
+            height="200"
+            :to="{
+              name: 'sellUint'
+            }">
+            販賣單位
+          </v-btn>
+        </v-col>
+        <v-col
+          cols="12"
+          md="3">
+          <v-btn
+            class="cyan d-flex align-center"
+            dark
+            height="200"
+            :to="{
+              name: 'cashMethod'
+            }">
+            付款方式
           </v-btn>
         </v-col>
       </v-row>
@@ -41,9 +67,12 @@
             dark
             height="200"
             :to="{
-              name: 'trade'
+              name: 'trade',
+              params: {
+              customerName: 'notyet'
+              }
             }">
-            Trade
+            交易
           </v-btn>
         </v-col>
       </v-row>
