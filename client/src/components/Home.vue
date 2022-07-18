@@ -68,8 +68,8 @@
             height="200"
             :to="{
               name: 'trade',
-              params: {
-              customerName: 'notyet'
+              params:{
+                customerName:'null'
               }
             }">
             交易
@@ -88,7 +88,9 @@
       }
     },
     methods: {
-
+      navigateTo (route) {
+        this.$router.push(route)
+      }
     }
       
   }

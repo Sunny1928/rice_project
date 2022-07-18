@@ -11,14 +11,15 @@
             label="Password"
             type="password"
             v-model="password"
-            autocomplete="new-password"
-          ></v-text-field>
-            <v-btn
+            autocomplete="new-password">
+          </v-text-field>
+          <div class="danger-alert" v-if="error">{{error}}</div>
+          <v-btn
             dark
             class="cyan"
             @click="login">
             Login
-            </v-btn>
+          </v-btn>
         </div>
       </panel>
     </v-flex>
@@ -47,8 +48,11 @@ export default {
         })
         this.$store.dispatch('setToken', response.data.token)
         this.$store.dispatch('setUser', response.data.user)
+        this.$router.push({
+        name: 'root'
+      })
       } catch (error) {
-        console.log(error)
+        this.error = error.response.data.error
       }
     }
   }

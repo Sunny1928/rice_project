@@ -11,6 +11,50 @@
       </router-link>
     </v-app-bar-title>
 
+    <v-spacer></v-spacer>
+
+        
+    <div v-if="$store.state.isUserLoggedIn">
+      <v-btn 
+        plain  
+        :to="{
+          name: 'customer'
+        }">
+        顧客
+      </v-btn>
+      <v-btn 
+        plain 
+        :to="{
+          name: 'product'
+        }">
+        商品
+      </v-btn>
+      <v-btn 
+        plain 
+        :to="{
+          name: 'sellUint'
+        }">
+        販賣單位
+      </v-btn>
+      <v-btn 
+        plain 
+        :to="{
+          name: 'cashMethod'
+        }">
+        付款方式
+      </v-btn>
+      <v-btn 
+        plain 
+        :to="{
+          name: 'trade',
+          params:{
+            customerName: 'null'
+          }
+        }">
+        交易
+      </v-btn>
+    </div>
+
     <!-- <v-toolbar-items>
       <v-btn 
         flat 
@@ -58,7 +102,7 @@ export default {
       this.$store.dispatch('setToken', null)
       this.$store.dispatch('setUser', null)
       this.$router.push({
-        name: 'root'
+        name: 'login'
       })
     }
   }

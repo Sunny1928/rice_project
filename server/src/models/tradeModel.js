@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
         },
         cashDate: {
-            type: 'TIMESTAMP',
+            type: DataTypes.DATE,
         }
     })
 

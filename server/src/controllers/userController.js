@@ -21,7 +21,7 @@ const login = async (req, res) => {
     const user = await User.findOne({where:{account: account}})
     if(!user){
         return res.status(403).send({
-            error: 'The login information was incorrect'
+            error: 'The account does not exist'
         })
     }
     const isPasswordVaild = await user.comparePassword(password)

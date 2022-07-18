@@ -96,13 +96,15 @@
       </template>
 
       <template v-slot:no-data>
+        <p class="ma-3">You haven't add any data.</p>
+        <p class="ma-3">Or you can click reset button</p>
         <v-btn
+          class="mb-3"
           color="primary"
           @click="initialize">
           Reset
         </v-btn>
       </template>
-
     </v-data-table>
   </v-container>
 </template>

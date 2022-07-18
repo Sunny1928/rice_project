@@ -1,36 +1,49 @@
 <template>
   <v-container>
-    <template>
+    <div class="white">
     <v-row>
       <v-col
         cols="12"
-        md="2">
-        <span>篩選條件：</span>
+        md="1"
+        class="pt-5">
+        <b>篩選條件</b>
       </v-col>
       <v-col
         cols="12"
-        md="4">
+        md="3">
         <v-select
           v-model="searchCustomer"
           :items="customerNames"
           label="顧客選項選項"
+          sort-by=""
           dense
           outlined
-          >
+          solo>
         </v-select>
       </v-col>
 
       <v-col
         cols="12"
-        md="1">
-        <v-btn>
+        md="1"
+        class="pt-3">
+        <v-btn
+          class="d-flex"
+          depressed
+          :disabled = "searchCustomer == 'null'"
+          :to="{
+            name: 'trade',
+            params: {
+              customerName: searchCustomer
+            }
+          }"
+          @click="this.initialize">
           搜尋
         </v-btn>
       </v-col>
     
       <v-col
         cols="12"
-        md="4">
+        md="3">
         <v-menu
           ref="menu"
           v-model="menu"
@@ -56,7 +69,6 @@
           <v-date-picker
             v-model="dates"
             no-title
-            scrollable
             range>
             <v-spacer></v-spacer>
             <v-btn
@@ -68,7 +80,7 @@
             <v-btn
               text
               color="primary"
-              @click="$refs.menu.save(dates)">
+              @click="$refs.menu.save(dates); filterTrades();">
               OK
             </v-btn>
           </v-date-picker>
@@ -77,11 +89,12 @@
 
       
     </v-row>
-    </template>
+    </div>
     <v-data-table
       :headers="headers"
       :items="trades"
-      class="elevation-1">
+      class="elevation-1"
+      v-if="customerName!='null'">
 
       <template v-slot:top>
         <v-toolbar flat>
@@ -198,7 +211,7 @@
           v-if="item.amount=='-'"
           dense
           class="mr-2"
-          @click="editItem(item)">
+          @click="addCashDate(item)">
           mdi-check-circle
         </v-icon>
         <v-icon
@@ -215,7 +228,10 @@
       </template>
 
       <template v-slot:no-data>
+        <p class="ma-3">You haven't add any data.</p>
+        <p class="ma-3">Or you can click reset button</p>
         <v-btn
+          class="mb-3"
           color="primary"
           @click="initialize">
           Reset
@@ -241,11 +257,12 @@ import CustomerService from '@/services/CustomerService'
 
 export default {
   data: () => ({
-    dates: ['2022-09-10', '2022-09-20'],
-    // dates: (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10),
+    // dates: [(new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10), (new Date(Date.now() - (new Date()).getTimezoneOffset() * 60000)).toISOString().substr(0, 10)],
+    dates: ['2022-7-10', '2022-7-18'],
+    
     menu: false,
 
-    searchCustomer:'',
+    searchCustomer:'null',
     customerNames: [],
     switch1: false,
     cashMethod: [],
@@ -281,6 +298,7 @@ export default {
       { text: '功能', value: 'actions', sortable: false, width: '10%'},
     ],
     trades: [],
+    allTrades: [],
     editedIndex: -1,
     editedItem: {
       name: '',
@@ -304,6 +322,11 @@ export default {
       return this.editedIndex === -1 ? '新增交易' : '編輯交易'
     },
     dateRangeText () {
+      if(new Date(this.dates[0])> new Date(this.dates[1])){
+        var tempDate = this.dates[1]
+        this.dates[1] = this.dates[0]
+        this.dates[0] = tempDate
+      }
       return this.dates.join(' ~ ')
     },
   },
@@ -323,12 +346,23 @@ export default {
   },
 
   methods: {
+    filterTrades (){
+      var startDate = new Date(this.dates[0]);
+      var endDate = new Date(this.dates[1]);
+
+      this.trades = this.allTrades.filter(function (product) {
+        var date = new Date(product.createdAt);
+        return (date >= new Date(startDate) && date <= new Date(new Date(endDate).valueOf() + 1000*3600*24));
+      });
+      // console.log(this.trades)
+    },
+
     numberWithCommas (x) {
       return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     },
 
     async initialize () {
-      this.customerNames = (await CustomerService.index()).data.map(value => value.name);
+      this.customerNames = (await CustomerService.index()).data.map(value => value.name).sort()
       // customer name
       this.customerName = this.$store.state.route.params.customerName
       // console.log(this.customerName)
@@ -344,15 +378,15 @@ export default {
       // console.log(productArr)
 
       // all trade of customer
-      this.trades = (await TradeService.index(this.customerName)).data
-      // console.log(this.trades)
+      this.allTrades = (await TradeService.index(this.customerName)).data
+      // console.log(this.allTrades)
 
       // cashMethod selector
       this.cashMethod = (await CashMethodService.index()).data.map(value => value.name);
 
       // calculate part
       var sum = 0
-      this.trades.forEach(item=>{
+      this.allTrades.forEach(item=>{
         item['date'] = item.createdAt.slice(0,10) + ' ' + item.createdAt.slice(11,19)
         
         if (item.amount == null){
@@ -377,6 +411,21 @@ export default {
 
         // console.log(item)
       })
+
+      this.filterTrades()
+    },
+
+    async addCashDate (item){
+      item['cashDate'] = new Date()
+      item['package'] = null
+      item['amount'] = null
+
+      try {
+        await TradeService.put(item)
+        this.initialize()
+      } catch(err){
+        console.log(err)
+      } 
     },
 
     editItem (item) {
@@ -431,7 +480,7 @@ export default {
       }
 
       if (this.editedIndex > -1) {
-        console.log('edit')
+        // console.log('edit')
         try{
           await TradeService.put(item)
           this.initialize()
@@ -439,7 +488,7 @@ export default {
           console.log(err)
         }
       } else {
-        console.log('new')
+        // console.log('new')
         try{
           await TradeService.post(item)
           this.initialize()
