@@ -1,6 +1,9 @@
 <template>
   <v-layout>
-    <v-flex xs6 offset-xs3>
+    <div v-if="!$store.state.isUserLoggedIn">
+      You have not login in yet
+    </div>
+    <v-flex xs6 offset-xs3 v-else>
       <h1>Basic Info</h1>
       <v-row>
         <v-col

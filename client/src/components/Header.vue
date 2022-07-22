@@ -69,13 +69,13 @@
     <v-spacer></v-spacer>
 
     <div>
-      <v-btn 
+      <!-- <v-btn 
         plain  
         :to="{
           name: 'register'
         }">
         Sign Up
-      </v-btn>
+      </v-btn> -->
       <v-btn 
         v-if="!$store.state.isUserLoggedIn"
         plain 

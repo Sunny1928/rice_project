@@ -11,6 +11,11 @@ const addTrade = async (req, res) => {
         name: req.body.name,
         amount: req.body.amount,
         package: req.body.package,
+        totalNumber: req.body.totalNumber,
+        sellUint: req.body.sellUint,
+        uintPrice: req.body.uintPrice,
+        aTradePrice: req.body.aTradePrice,
+
         customer_name: req.body.customer_name,
         user_name: req.body.user_name,
         cash: req.body.cash,

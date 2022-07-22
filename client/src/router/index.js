@@ -9,6 +9,8 @@ import Product from '@/components/Product'
 import Trade from '@/components/Trade'
 import SellUint from '@/components/SellUint'
 import CashMethod from '@/components/CashMethod'
+import Print from '@/components/Print'
+
 
 
 
@@ -54,6 +56,14 @@ const routes = [
     path: '/trade/:customerName',
     name: 'trade',
     component: Trade
+  },
+  {
+    path: '/print',
+    name: 'print',
+    component: Print,
+    meta: {
+      header: 0
+    }
   }
 ]
 

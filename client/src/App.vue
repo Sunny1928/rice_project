@@ -1,12 +1,11 @@
 <template>
   <div id="app">
     <v-app>
-      <page-header />
+      <page-header 
+      v-if="!$store.state.isPrint"/>
       
       <v-main>
-        <v-container fluid>
-          <router-view></router-view>
-        </v-container>
+        <router-view></router-view>
       </v-main>
     </v-app>
   </div>
@@ -28,7 +27,6 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
   margin-top: 80px;
 }
 

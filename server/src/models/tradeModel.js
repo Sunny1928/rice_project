@@ -10,6 +10,18 @@ module.exports = (sequelize, DataTypes) => {
         package: {
             type: DataTypes.INTEGER,
         },
+        totalNumber: {
+            type: DataTypes.INTEGER,
+        },
+        sellUint: {
+            type: DataTypes.STRING,
+        },
+        uintPrice: {
+            type: DataTypes.INTEGER,
+        },
+        aTradePrice: {
+            type: DataTypes.INTEGER,
+        },
         customer_name: {
             type: DataTypes.STRING
         },

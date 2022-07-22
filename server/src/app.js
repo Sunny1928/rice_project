@@ -30,8 +30,6 @@ app.use('/api/cashMethods', cashMethodRouter)
 
 
 
-
-
 app.post('/register', (req, res)=>{
     res.send({
         message: `Hello ${req.body.account}!`

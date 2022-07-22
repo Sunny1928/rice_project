@@ -14,7 +14,8 @@ export default new Vuex.Store({
   state: {
     token: null,
     user: null,
-    isUserLoggedIn: false
+    isUserLoggedIn: false,
+    isPrint: false
   },
   getters: {
   },
@@ -25,6 +26,9 @@ export default new Vuex.Store({
     },
     setUser (state, user) {
       state.user = user
+    },
+    setPrint (state) {
+      state.isPrint = !state.isPrint
     }
   },
   actions: {
